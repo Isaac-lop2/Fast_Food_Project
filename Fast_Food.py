@@ -15,15 +15,15 @@ class Producto:
         self.precio = precio
 
     def __str__(self):
-        return f"{self.nombre} - ${self.precio:.2f}"
+        return f"{self.nombre} - Q.{self.precio:.2f}"
 
 def tomar_pedido():
     cliente = input("Nombre del cliente: ")
     items = []
 
     while True:
-        nombre = input("Nombre del producto (o 'fin' para finalizar el pedido): ")
-        if nombre.lower() == 'fin':
+        nombre = input("Nombre del producto (o 'f' para finalizar el pedido): ")
+        if nombre.lower() == 'f':
             break
         precio = float(input("Precio del producto: "))
         producto = Producto(nombre, precio)
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     for i, pedido in enumerate(pedidos, 1):
         print(f"Pedido {i}:")
         mostrar_pedido(pedido)
-        print(f"Total: ${pedido.calcular_total():.2f}")
+        print(f"Total: Q.{pedido.calcular_total():.2f}")
         print()
 
-    print("Gracias por utilizar el sistema de gestión de pedidos.")
+    
