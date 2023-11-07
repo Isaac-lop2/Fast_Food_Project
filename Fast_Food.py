@@ -48,10 +48,9 @@ if __name__ == "__main__":
         pedidos.append(pedido)
 
     print("Resumen de pedidos:")
-    for i, pedido in enumerate(pedidos, 1):
+    for i, pedido in enumerate(pedidos,1):
         print(f"Pedido {i}:")
         mostrar_pedido(pedido)
         print(f"Total: Q.{pedido.calcular_total():.2f}")
         print()
-
-    
+        
