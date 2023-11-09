@@ -1,56 +1,82 @@
-class Pedido:
-    def __init__(self, cliente, items):
-        self.cliente = cliente
-        self.items = items
-
-    def calcular_total(self):
-        total = 0
-        for item in self.items:
-            total += item.precio
-        return total
-
 class Producto:
-    def __init__(self, nombre, precio):
+    def __init__(self, nombre, stock):
         self.nombre = nombre
-        self.precio = precio
+        self.stock = stock
 
-    def __str__(self):
-        return f"{self.nombre} - Q.{self.precio:.2f}"
+    def actualizar_stock(self, cantidad):
+        self.stock -= cantidad
 
-def tomar_pedido():
-    cliente = input("Nombre del cliente: ")
-    items = []
+class Pedido:
+    def __init__(self, cliente):
+        self.cliente = cliente
+        self.items = []
 
-    while True:
-        nombre = input("Nombre del producto (o 'f' para finalizar el pedido): ")
-        if nombre.lower() == 'f':
-            break
-        precio = float(input("Precio del producto: "))
-        producto = Producto(nombre, precio)
-        items.append(producto)
+    def agregar_item(self, producto, cantidad):
+        self.items.append({'producto': producto, 'cantidad': cantidad})
 
-    return Pedido(cliente, items)
+class Restaurante:
+    def __init__(self):
+        self.inventario = {}
+        self.cola_pedidos = []
 
-def mostrar_pedido(pedido):
-    print(f"Cliente: {pedido.cliente}")
-    print("Productos en el pedido:")
-    for item in pedido.items:
-        print(f"  - {item}")
+    def agregar_producto(self, nombre, stock):
+        if nombre in self.inventario:
+            self.inventario[nombre].stock += stock
+        else:
+            producto = Producto(nombre, stock)
+            self.inventario[nombre] = producto
+
+    def tomar_pedido(self, cliente, pedido_items):
+        pedido = Pedido(cliente)
+        for item in pedido_items:
+            nombre_producto, cantidad = item
+            if nombre_producto in self.inventario and self.inventario[nombre_producto].stock >= cantidad:
+                pedido.agregar_item(nombre_producto, cantidad)
+                self.inventario[nombre_producto].actualizar_stock(cantidad)
+            else:
+                print(f"Producto '{nombre_producto}' no disponible en stock.")
+
+        self.cola_pedidos.append(pedido)
+
+    def mostrar_cola_pedidos(self):
+        print("Cola de Pedidos:")
+        for i, pedido in enumerate(self.cola_pedidos):
+            print(f"Pedido {i + 1} - Cliente: {pedido.cliente}")
+            for item in pedido.items:
+                print(f"  - Producto: {item['producto']}, Cantidad: {item['cantidad']}")
+
+def mostrar_menu():
+    print("\nMenú:")
+    print("1. Agregar producto al inventario")
+    print("2. Tomar un pedido")
+    print("3. Mostrar cola de pedidos")
+    print("4. Salir")
 
 if __name__ == "__main__":
-    pedidos = []
+    restaurante = Restaurante()
 
     while True:
-        opcion = input("¿Desea tomar un nuevo pedido? (s/n): ")
-        if opcion.lower() != 's':
-            break
-        pedido = tomar_pedido()
-        pedidos.append(pedido)
+        mostrar_menu()
+        opcion = input("Seleccione una opción: ")
 
-    print("Resumen de pedidos:")
-    for i, pedido in enumerate(pedidos,1):
-        print(f"Pedido {i}:")
-        mostrar_pedido(pedido)
-        print(f"Total: Q.{pedido.calcular_total():.2f}")
-        print()
-        
+        if opcion == "1":
+            nombre_producto = input("Ingrese el nombre del producto: ")
+            stock_producto = int(input("Ingrese la cantidad en stock: "))
+            restaurante.agregar_producto(nombre_producto, stock_producto)
+            print(f"{nombre_producto} agregado al inventario.")
+        elif opcion == "2":
+            cliente = input("Ingrese el nombre del cliente: ")
+            pedido_items = []
+            while True:
+                nombre_producto = input("Ingrese el nombre del producto (o 'f' para terminar): ")
+                if nombre_producto == 'f':
+                    break
+                cantidad = int(input("Ingrese la cantidad: "))
+                pedido_items.append((nombre_producto, cantidad))
+            restaurante.tomar_pedido(cliente, pedido_items)
+        elif opcion == "3":
+            restaurante.mostrar_cola_pedidos()
+        elif opcion == "4":
+            break
+        else:
+            print("Opción no válida. Por favor, seleccione una opción válida.")
