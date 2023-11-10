@@ -1,135 +1,71 @@
-class ElementoMenu:
-    def __init__(self, nombre, precio):
-        self.nombre = nombre
-        self.precio = precio
-        self.siguiente = None
+from collections import deque
 
-class MenuRestaurante:
-    def __init__(self):
-        self.inicio = None
+# Inicializar el menú con precios
+menu_empleado = {}
+menu_usuario = {}
 
-    def agregar_elemento(self, nombre, precio):
-        nuevo_elemento = ElementoMenu(nombre, precio)
-        if self.inicio is None:
-            self.inicio = nuevo_elemento
-        else:
-            actual = self.inicio
-            while actual.siguiente:
-                actual = actual.siguiente
-            actual.siguiente = nuevo_elemento
+# Inicializar una cola para rastrear los cambios de precios
+cambios_precios = deque()
 
-    def mostrar_menu(self):
-        actual = self.inicio
-        print("\n======= Menú del Restaurante =======")
-        while actual:
-            print(f"{actual.nombre}: Q{actual.precio}")
-            actual = actual.siguiente
-        print("===================================")
+# Función para mostrar el menú (para empleado o usuario)
+def mostrar_menu(menu):
+    print("Menú y Precios:")
+    for item, precio in menu.items():
+        print(f"{item}: ${precio}")
 
-def ingresar_menu():
-    menu = MenuRestaurante()
+# Función para actualizar precios (solo para empleados)
+def actualizar_precios():
+    mostrar_menu(menu_empleado)
+    item = input("Ingresa el elemento del menú para actualizar el precio: ")
+    if item in menu_empleado:
+        nuevo_precio = float(input(f"Nuevo precio para {item}: $"))
+        cambios_precios.append((item, menu_empleado[item], nuevo_precio))
+        menu_empleado[item] = nuevo_precio
+        print(f"Precio de {item} actualizado con éxito.")
+    else:
+        print("Producto no válido. Inténtalo de nuevo.")
 
+# Función para crear el menú (solo para empleados)
+def crear_menu():
     while True:
-        nombre = input("Ingrese el nombre del elemento del menú (o 'q' para salir): ")
-        if nombre.lower() == 'q':
+        nombre = input("Ingresa el nombre del elemento del menú (o 'fin' para terminar): ")
+        if nombre == 'fin':
             break
+        precio = float(input(f"Precio para {nombre}: $"))
+        menu_empleado[nombre] = precio
+        print(f"{nombre} ha sido añadido al menú.")
 
-        precio = float(input("Ingrese el precio del elemento: "))
-        menu.agregar_elemento(nombre, precio)
+# Función para deshacer el último cambio de precio (solo para empleados)
+def deshacer_cambio():
+    if cambios_precios:
+        item, precio_anterior, _ = cambios_precios.pop()
+        menu_empleado[item] = precio_anterior
+        print(f"Se deshizo el cambio de precio para {item}.")
+    else:
+        print("No hay cambios de precio para deshacer.")
 
-    return menu
+while True:
+    print("\nOpciones:")
+    print("1. Mostrar Menú (Usuario)")
+    print("2. Mostrar Menú (Empleado)")
+    print("3. Actualizar Precios (Empleado)")
+    print("4. Crear Menú (Empleado)")
+    print("5. Deshacer Cambio de Precio (Empleado)")
+    print("6. Salir")
 
-def hacer_pedido(menu):
-    menu.mostrar_menu()
+    opcion = input("Elige una opción: ")
 
-    while True:
-        nombre_cliente = input("\nIngrese su nombre (o 'q' para salir): ")
-        if nombre_cliente.lower() == 'q':
-            break
-
-        email_cliente = input("Ingrese su correo electrónico: ")
-        edad_cliente = input("Ingrese su edad: ")
-        dpi_cliente = input("Ingrese su DPI: ")
-
-        class Cliente:
-            def __init__(self, nombre, email, edad, dpi):
-                self.nombre = nombre
-                self.email = email
-                self.edad = edad
-                self.dpi = dpi
-
-        class Pedido:
-            def __init__(self):
-                self.elementos = []
-
-            def agregar_elemento(self, elemento):
-                self.elementos.append(elemento)
-
-            def calcular_total(self):
-                total = 0
-                for elemento in self.elementos:
-                    total += elemento.precio
-                return total
-
-        cliente = Cliente(nombre_cliente, email_cliente, edad_cliente, dpi_cliente)
-
-        pedido = Pedido()
-        while True:
-            eleccion = input("\n¿Qué desea ordenar? (Ingrese 'q' para finalizar o 's' para salir): ")
-            if eleccion.lower() == 'q':
-                break
-            elif eleccion.lower() == 's':
-                break
-            else:
-                elemento = menu.inicio
-                while elemento:
-                    if eleccion.lower() == elemento.nombre.lower():
-                        pedido.agregar_elemento(elemento)
-                        break
-                    elemento = elemento.siguiente
-
-        total = pedido.calcular_total()
-        print(f"\nTotal a pagar: Q{total}")
-
-        metodo_pago = input("¿Desea pagar en efectivo o con tarjeta? ")
-        if metodo_pago.lower() == "efectivo":
-            print("Gracias por su pago en efectivo.")
-        elif metodo_pago.lower() == "tarjeta":
-            nombre_tarjeta = input("Ingrese el nombre del titular de la tarjeta: ")
-            numero_tarjeta = input("Ingrese el número de la tarjeta: ")
-            cvv_tarjeta = input("Ingrese el código CVV: ")
-            print("Gracias por su pago con tarjeta.")
-            print(f"Titular de la tarjeta: {nombre_tarjeta}")
-            print(f"Número de la tarjeta: {numero_tarjeta}")
-            print(f"Código CVV: {cvv_tarjeta}")
-        else:
-            print("Método de pago no válido.")
-
-        print(f"\nGracias, {cliente.nombre} por su pedido. Su orden ha sido registrada.")
-
-def main():
-    menu = MenuRestaurante()
-
-    while True:
-        opcion = input("\n¿Qué desea hacer? \n1. Ingresar al menú \n2. Hacer un pedido \n'q' para salir \nIngrese su opción:")
-
-        if opcion == 'q':
-            break
-        elif opcion == '1':
-            menu = ingresar_menu()
-        elif opcion == '2':
-            if menu.inicio is None:
-                print("¡Error! El menú está vacío. Por favor, ingrese elementos al menú primero.")
-            else:
-                print("¡Bienvenido a nuestro restaurante!")
-                print("")
-
-                hacer_pedido(menu)
-        else:
-            print("Opción no válida. Por favor, ingrese 1, 2 o 'q'.")
-
-if __name__ == "__main__":
-    main()
-
-
-
+    if opcion == "1":
+        mostrar_menu(menu_usuario)
+    elif opcion == "2":
+        mostrar_menu(menu_empleado)
+    elif opcion == "3":
+        actualizar_precios()
+    elif opcion == "4":
+        crear_menu()
+    elif opcion == "5":
+        deshacer_cambio()
+    elif opcion == "6":
+        break
+    else:
+        print("Opción no válida. Inténtalo de nuevo.")
