@@ -145,7 +145,7 @@ def generar_factura(cliente, pedido, metodo_pago):
     
 
 def main():
-    print("¡Bienvenido al Resta!")
+    print("¡Bienvenido al Menu!")
 
     menu = MenuRestaurante()
 
