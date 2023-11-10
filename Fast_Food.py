@@ -26,8 +26,26 @@ class MenuRestaurante:
             actual = actual.siguiente
         print("===================================")
 
+    def ordenar_menu(self):
+        if self.inicio is None or self.inicio.siguiente is None:
+            return
+
+        cambiado = True
+        while cambiado:
+            actual = self.inicio
+            cambiado = False
+
+            while actual.siguiente:
+                if actual.precio > actual.siguiente.precio:
+                    actual.precio, actual.siguiente.precio = actual.siguiente.precio, actual.precio
+                    actual.nombre, actual.siguiente.nombre = actual.siguiente.nombre, actual.nombre
+                    cambiado = True
+                actual = actual.siguiente
+
 def ingresar_menu():
     menu = MenuRestaurante()
+    
+    print("¡Bienvenido a la creación del Menú del Restaurante!")
 
     while True:
         nombre = input("Ingrese el nombre del elemento del menú (Comida, Bebida, Postres) (o 'q' si ya termino de agregar cosas al menu) \nIngrese su opción: ")
@@ -36,7 +54,7 @@ def ingresar_menu():
 
         precio = float(input(f"Ingrese el precio de {nombre}: "))
         menu.agregar_elemento(nombre, precio)
-
+    menu.ordenar_menu()
     return menu
 
 def hacer_pedido(menu):
@@ -51,13 +69,15 @@ def hacer_pedido(menu):
         email_cliente = input("Ingrese su correo electrónico: ")
         edad_cliente = input("Ingrese su edad: ")
         dpi_cliente = input("Ingrese su DPI: ")
+        nit_cliente = input("Ingrese su NIT: ")
 
         class Cliente:
-            def __init__(self, nombre, email, edad, dpi):
+            def __init__(self, nombre, email, edad, dpi, nit):
                 self.nombre = nombre
                 self.email = email
                 self.edad = edad
                 self.dpi = dpi
+                self.nit = nit
 
         class Pedido:
             def __init__(self):
@@ -72,7 +92,7 @@ def hacer_pedido(menu):
                     total += elemento.precio
                 return total
 
-        cliente = Cliente(nombre_cliente, email_cliente, edad_cliente, dpi_cliente)
+        cliente = Cliente(nombre_cliente, email_cliente, edad_cliente, dpi_cliente, nit_cliente)
 
         pedido = Pedido()
         while True:
@@ -104,16 +124,16 @@ def hacer_pedido(menu):
         else:
             print("Método de pago no válido.")
             
-        generar_factura(cliente, pedido)
+        generar_factura(cliente, pedido, metodo_pago)
         print(f"\nGracias, {cliente.nombre} por su pedido. Su orden ha sido registrada.")
 
 
-def generar_factura(cliente, pedido):
+def generar_factura(cliente, pedido, metodo_pago):
     print("\n======= Factura =======")
     print(f"Cliente: {cliente.nombre}")
     print(f"Correo electrónico: {cliente.email}")
-    print(f"Edad: {cliente.edad}")
-    print(f"DPI: {cliente.dpi}")
+    print(f"Nit: {cliente.nit}")
+    print(f"Tipo de pago: {metodo_pago.lower()}")
     print("\nDetalle de la orden:")
     
     for elemento in pedido.elementos:
@@ -125,6 +145,8 @@ def generar_factura(cliente, pedido):
     
 
 def main():
+    print("¡Bienvenido al Resta!")
+
     menu = MenuRestaurante()
 
     while True:
@@ -147,6 +169,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
