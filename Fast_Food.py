@@ -1,3 +1,4 @@
+
 class Producto:
     def __init__(self, nombre, stock, precio):
         self.nombre = nombre
