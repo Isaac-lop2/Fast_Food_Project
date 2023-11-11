@@ -50,13 +50,17 @@ class Restaurante:
         self.cola_pedidos.append(pedido)
 
     def mostrar_cola_pedidos(self):
-        print("Cola de Pedidos:")
-        for i, pedido in enumerate(self.cola_pedidos):
-            print(f"Pedido {i + 1} - Cliente: {pedido.cliente['nombre']}")
-            for item in pedido.items:
-                print(f"  - Producto: {item['producto'].nombre}, Cantidad: {item['cantidad']}, Precio: Q{item['producto'].precio}")
-            print(f"  - Total: Q{pedido.total}")
+        if not self.cola_pedidos:
+            print("No hay pedidos en la cola.")
+        else:
+            print("Cola de Pedidos:")
+            for i, pedido in enumerate(self.cola_pedidos):
+                print(f"Pedido {i + 1} - Cliente: {pedido.cliente}")
+                for item in pedido.items:
+                    print(f"  - Producto: {item['producto'].nombre}, Cantidad: {item['cantidad']}, Precio: Q{item['producto'].precio}")
+                print(f"  - Total: Q{pedido.total}")
             print("======================")
+
 
     def generar_factura(self, cliente_nombre, pedido, metodo_pago):
         print("\n======= Factura =======")
@@ -124,6 +128,7 @@ if __name__ == "__main__":
                 restaurante.tomar_pedido(cliente_nombre, pedido_items)
         elif opcion == "3":
             restaurante.mostrar_cola_pedidos()
+        
         elif opcion == "4":
             cliente_nombre = input("Ingrese el nombre del cliente: ")
             if cliente_nombre not in restaurante.clientes:
@@ -132,11 +137,23 @@ if __name__ == "__main__":
                 if restaurante.cola_pedidos:
                     pedido = restaurante.cola_pedidos[0]
                     restaurante.mostrar_cola_pedidos()
+                    metodo_pago = input("¿Desea pagar en efectivo o con tarjeta? ")
+                    if metodo_pago.lower() == "efectivo":
+                        print("Gracias por su pago en efectivo.")
+                    elif metodo_pago.lower() == "tarjeta":
+                        input("Ingrese el nombre del titular de la tarjeta: ")
+                        input("Ingrese el número de la tarjeta: ")
+                        input("Ingrese el código CVV: ")
+                        print("Gracias por su pago con tarjeta.")
+                    else:
+                        print("Método de pago no válido.")
+
                     print(f"\nGenerando factura para el cliente {cliente_nombre}")
                     restaurante.generar_factura(cliente_nombre, pedido, metodo_pago)
                     restaurante.cola_pedidos.pop(0)
                 else:
                     print("No hay pedidos pendientes.")
+
         elif opcion == "5":
             nombre_cliente = input("Ingrese el nombre del cliente: ")
             email_cliente = input("Ingrese el correo electrónico: ")
