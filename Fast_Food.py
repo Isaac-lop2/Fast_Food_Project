@@ -34,7 +34,7 @@ class Restaurante:
 
     def tomar_pedido(self, cliente_nombre, pedido_items):
         if cliente_nombre not in self.clientes:
-            self.clientes[cliente_nombre] = {'email': '', 'edad': '', 'dpi': '', 'nit': ''}
+            self.clientes[cliente_nombre] = {'nombre': '','email': '', 'edad': '', 'dpi': '', 'nit': ''}
 
         cliente = self.clientes[cliente_nombre]
 
@@ -55,7 +55,7 @@ class Restaurante:
         else:
             print("Cola de Pedidos:")
             for i, pedido in enumerate(self.cola_pedidos):
-                print(f"Pedido {i + 1} - Cliente: {pedido.cliente}")
+                print(f"Pedido {i + 1} - Cliente: {pedido.cliente['nombre']}")
                 for item in pedido.items:
                     print(f"  - Producto: {item['producto'].nombre}, Cantidad: {item['cantidad']}, Precio: Q{item['producto'].precio}")
                 print(f"  - Total: Q{pedido.total}")
@@ -78,7 +78,7 @@ class Restaurante:
 
     def agregar_cliente(self, nombre, email, edad, dpi, nit):
         if nombre not in self.clientes:
-            self.clientes[nombre] = {'email': email, 'edad': edad, 'dpi': dpi, 'nit': nit}
+            self.clientes[nombre] = {'nombre': nombre,'email': email, 'edad': edad, 'dpi': dpi, 'nit': nit}
         else:
             print("¡Error! Cliente ya registrado.")
 
